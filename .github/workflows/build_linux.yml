@@ -28,7 +28,7 @@ jobs:
           pyinstaller --onefile galleryserve/cli.py --name galleryserve
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: galleryserve-linux
           path: dist/galleryserve
