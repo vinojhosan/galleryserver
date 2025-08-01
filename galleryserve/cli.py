@@ -3,9 +3,8 @@
 # ===========================================
 import argparse
 import os
-# from server import start_server
-from .license import LicenseManager
-from .server import ThumbnailHTTPRequestHandler
+from galleryserve.license import LicenseManager
+from galleryserve.server import ThumbnailHTTPRequestHandler
 
 def main():
     parser = argparse.ArgumentParser(

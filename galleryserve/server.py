@@ -11,7 +11,7 @@ from PIL import Image
 import io
 import zipfile
 import tempfile
-from .license import LicenseManager
+from galleryserve.license import LicenseManager
 
 class ThumbnailHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, thumbnail_size=200, **kwargs):
