@@ -69,7 +69,51 @@ class ThumbnailHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     
     def _generate_gallery_html(self, dir_path, entries, url_path):
         """Generate HTML with license-aware features"""
-        has_password = self.license_manager.has_feature('password_protection')
+        has_password = self.license_manager.password
+        print("has password: ", has_password)
+
+        # Password protection: if enabled, show password prompt if not authenticated
+        if has_password:
+            # Check for password cookie
+            cookie = self.headers.get('Cookie', '')
+            cookies = dict(item.strip().split('=', 1) for item in cookie.split(';') if '=' in item)
+            if cookies.get('gallery_password') != self.license_manager.password:
+                # Show password prompt page
+                return f"""
+                <html>
+                <head>
+                    <title>Password Required</title>
+                    <style>
+                        body {{ font-family: Arial, sans-serif; background: #f8f9fa; }}
+                        .box {{ max-width: 400px; margin: 100px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.08);}}
+                        input[type="password"] {{ width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #ddd; margin-bottom: 15px; }}
+                        .btn {{ background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; }}
+                    </style>
+                    <script>
+                        const user_password = "{self.license_manager.password}";
+                        function verifyPassword() {{
+                            // const user_password = document.cookie.split('; ').find(row => row.startsWith('user_password=')).split('=')[1];
+                            const pwd = document.querySelector('input[name="password"]').value;
+                            if (pwd === user_password) {{  // Replace with actual password logic
+                                document.cookie = `gallery_password={self.license_manager.password}; path=/`;
+                                window.location.reload();
+                            }} else {{
+                                alert('Incorrect password');
+                            }}
+                            }}
+                    </script>
+                </head>
+                <body>
+                    <div class="box">
+                        <h2>🔒 Enter Gallery Password</h2>
+                        <div>
+                            <input type="password" name="password" placeholder="Password" required autofocus>
+                            <button class="btn" type="submit" onclick="verifyPassword()" >Unlock</button>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """
         has_bulk = self.license_manager.has_feature('bulk_download')
         has_multi = self.license_manager.has_feature('multi_selection')
         
@@ -421,6 +465,8 @@ class ThumbnailHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             
             window.location.href = `/_download_bulk?${params.toString()}`;
         }
+
+
     </script>
 </body>
 </html>"""

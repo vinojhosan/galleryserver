@@ -9,6 +9,7 @@ from datetime import datetime
 class LicenseManager:
     BASIC = "basic"
     ADVANCED = "advanced"
+    password = None
     
     def __init__(self):
         self.license_file = Path.home() / '.thumbnail_server_license'
@@ -73,4 +74,4 @@ class LicenseManager:
     
     def get_upgrade_url(self, feature):
         """Get upgrade URL for specific feature"""
-        return f"https://gumroad.com/l/thumbnail-server-advanced?feature={feature}"
+        return f"https://gumroad.com/l/galleryserve?feature={feature}"

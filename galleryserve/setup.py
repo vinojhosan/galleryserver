@@ -40,6 +40,7 @@ Perfect for photographers, designers, and teams who need professional image gall
     install_requires=[
         "Pillow>=8.0.0",
         "requests>=2.25.0",
+        "pyngrok>=5.2.0,<6.0.0"
     ],
     entry_points={
         "console_scripts": [

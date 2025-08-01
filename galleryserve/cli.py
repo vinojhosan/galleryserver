@@ -9,8 +9,8 @@ from .server import ThumbnailHTTPRequestHandler
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Thumbnail Server - Professional Image Gallery',
-        prog='thumbnail-server'
+        description='GalleryServe - Professional Image Gallery',
+        prog='galleryserve'
     )
     parser.add_argument('port', type=int, nargs='?', default=8000, 
                         help='Port to serve on (default: 8000)')
@@ -19,11 +19,36 @@ def main():
     parser.add_argument('--activate', help='Activate license with key')
     parser.add_argument('--status', action='store_true', help='Show license status')
     parser.add_argument('--version', action='version', version='thumbnail-server 1.0.0')
+    parser.add_argument('--kill', action='store_true', help='Kill the server')
+    parser.add_argument('--password', nargs='?', type=str, help='Set a password for the gallery')
+    parser.add_argument("--internet", action="store_true", help="Enable public internet access \
+        using ngrok tunnel (requires internet connection)")
     
     args = parser.parse_args()
     
     license_manager = LicenseManager()
     
+
+    if args.kill:
+        # kill the port which already running the galleryserve
+        import signal
+        import socket
+        import psutil
+
+        port = args.port
+        for conn in psutil.net_connections():
+            if conn.laddr.port == port:
+                pid = conn.pid
+                if pid:
+                    p = psutil.Process(pid)
+                    print(f"Killing process {pid} on port {port} ({p.name()})")
+                    p.terminate()  # or p.kill() for force kill
+                    p.wait(timeout=3)
+                    print("Process terminated.")
+                    return True
+        return
+
+
     # Handle license activation
     if args.activate:
         success, message = license_manager.activate_license(args.activate)
@@ -57,7 +82,7 @@ def main():
         return
     
     # Show startup banner
-    print("🖼️  Thumbnail Server v1.0.0")
+    print("🖼️  GalleryServe v1.0.0")
     
     if license_manager.current_tier == "basic":
         print("📦 Basic Edition")
@@ -65,12 +90,27 @@ def main():
         print(f"   {license_manager.get_upgrade_url('startup')}")
     else:
         print("🚀 Advanced Edition - All features unlocked!")
+        if args.password:
+            LicenseManager.password = args.password
+            print(f"🔒 Password set to: {args.password}")
     
     print(f"\n📁 Directory: {os.path.abspath(args.directory)}")
     print(f"🔗 Local URL: http://localhost:{args.port}")
     print("⚙️  License page: http://localhost:{}//_license".format(args.port))
     print("\n" + "="*60)
     
+
+     # If Advanced Edition, start ngrok
+    if args.internet and license_manager.current_tier == "advanced":
+        try:
+            from pyngrok import ngrok
+            public_url = ngrok.connect(args.port)
+            print(f"🌐 Public URL: {public_url}")
+        except Exception as e:
+            print(f"❌ Failed to start ngrok tunnel: {e}")
+    else:
+        print("🌐 Public sharing via ngrok is disabled in Basic Edition.")
+
     start_server(
         port=args.port,
         directory=args.directory
@@ -97,9 +137,13 @@ def start_server(port=8000, directory='.'):
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
+            print("\n🛑 Server stopped by user.")
+        finally:
             httpd.server_close()
-            print("\n🛑 Server stopped.")
-    httpd.server_close()
+            httpd.shutdown()
+            print("✅ Port released.")
+
+    httpd.shutdown()
 
 if __name__ == "__main__":
     main()
