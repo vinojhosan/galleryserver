@@ -45,11 +45,13 @@ class LicenseManager:
         return False, "❌ Invalid license key"
     
     def _validate_key(self, key):
+
+        key = key.strip()
         """Validate license key format"""
         # Basic format: BASIC-XXXXX or ADVANCED-XXXXX
         if key.startswith('BASIC-') and len(key) == 11:
             return self.BASIC
-        elif key.startswith('ADVANCED-') and len(key) == 15:
+        elif key.startswith('ADVANCED-') and len(key) == 18:
             return self.ADVANCED
         return None
     

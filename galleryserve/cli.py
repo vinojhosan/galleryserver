@@ -99,6 +99,7 @@ def start_server(port=8000, directory='.'):
         except KeyboardInterrupt:
             httpd.server_close()
             print("\n🛑 Server stopped.")
+    httpd.server_close()
 
 if __name__ == "__main__":
     main()

@@ -310,13 +310,16 @@ class ThumbnailHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             <a href="{self.license_manager.get_upgrade_url('general')}" class="btn" style="margin-top: 10px;">
                 Upgrade to Advanced - $15
             </a>
-            <div style="margin-top: 20px;">
+        </div>
+"""
+
+        html += """
+        <div style="margin-top: 20px;">
                 <a href=".." class="btn btn-secondary" style="font-size: 15px;">
                     ⬅️ Go to Parent Folder
                 </a>
             </div>
-        </div>
-"""
+        """
 
         html += '<div class="gallery">'
         
