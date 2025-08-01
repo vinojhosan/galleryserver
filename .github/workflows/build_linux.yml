@@ -25,6 +25,7 @@ jobs:
 
       - name: Build executable with PyInstaller
         run: |
+          pip install pyinstaller
           pyinstaller --onefile galleryserve/cli.py --name galleryserve
 
       - name: Upload artifact
