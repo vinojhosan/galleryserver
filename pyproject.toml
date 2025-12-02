@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "galleryserver"
+version = "1.0.0"
+description = "A modern local image gallery server with thumbnails and modal viewer"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    { name="Vinoj John Hosan E", email="vinojhosan@gmail.com" }
+]
+license = {text = "MIT"}
+dependencies = [
+    "Pillow"
+]
+
+[project.urls]
+Homepage = "https://github.com/vinojhosan/galleryserver"
+
+[project.scripts]
+galleryserver = "galleryserver.server:main"
+
+
